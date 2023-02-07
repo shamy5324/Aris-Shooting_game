@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      #game-screen {
+        width: 500px;
+        height: 500px;
+        margin: 50px auto;
+        border: 1px solid black;
+        position: relative;
+      }
+      
+      #character {
+        width: 50px;
+        height: 50px;
+        background-image: url("https://media.discordapp.net/attachments/1068496153722748941/1069970302127329451/0bdcb3e8f72d91ea.png?width=593&height=593");
+        background-size: cover;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-screen">
+      <div id="character"></div>
+    </div>
+    
+    <script>
+      const character = document.getElementById("character");
+      const gameScreen = document.getElementById("game-screen");
+      
+      gameScreen.addEventListener("click", function(event) {
+        const targetX = event.clientX - gameScreen.offsetLeft - character.offsetWidth / 2;
+        const targetY = event.clientY - gameScreen.offsetTop - character.offsetHeight / 2;
+        moveTo(targetX, targetY);
+      });
+      
+      function moveTo(targetX, targetY) {
+        character.style.left = targetX + "px";
+        character.style.top = targetY + "px";
+        const screenWidth = gameScreen.offsetWidth - character.offsetWidth;
+        const screenHeight = gameScreen.offsetHeight - character.offsetHeight;
+        if (targetX < 0) {
+          character.style.left = "0px";
+        } else if (targetX > screenWidth) {
+          character.style.left = screenWidth + "px";
+        }
+        if (targetY < 0) {
+          character.style.top = "0px";
+        } else if (targetY > screenHeight) {
+          character.style.top = screenHeight + "px";
+        }
+      }
+    </script>
+  </body>
+</html>
