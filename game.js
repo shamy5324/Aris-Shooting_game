@@ -298,7 +298,7 @@ function gameLoop() {
 
                     // Item spawn
                     if (Math.random() < 0.01) items.push({ x: enemy.x, y: enemy.y, type: '#ff79c7', speed: 2 });
-                    if (Math.random() < 1) items.push({ x: enemy.x, y: enemy.y, type: '#54df63', speed: 2 });
+                    if (Math.random() < 0.01) items.push({ x: enemy.x, y: enemy.y, type: '#54df63', speed: 2 });
 					if (Math.random() < 0.01) items.push({ x: enemy.x, y: enemy.y, type: '#a23843', speed: 2 });
                 }
             }
