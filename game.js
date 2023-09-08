@@ -11,6 +11,7 @@ let player = {
     nextFire: 0,
 	lasers: 1,
 	roundLaserCount: 0,
+	greenItems: 0,
     alive: true
 };
 
@@ -297,7 +298,7 @@ function gameLoop() {
 
                     // Item spawn
                     if (Math.random() < 0.01) items.push({ x: enemy.x, y: enemy.y, type: '#ff79c7', speed: 2 });
-                    if (Math.random() < 0.01) items.push({ x: enemy.x, y: enemy.y, type: '#54df63', speed: 2 });
+                    if (Math.random() < 1) items.push({ x: enemy.x, y: enemy.y, type: '#54df63', speed: 2 });
 					if (Math.random() < 0.01) items.push({ x: enemy.x, y: enemy.y, type: '#a23843', speed: 2 });
                 }
             }
@@ -326,7 +327,10 @@ function gameLoop() {
             items.splice(index, 1);
 
             if (item.type === '#ff79c7' && player.lasers < 5) player.lasers++;
-            if (item.type === '#54df63') player.firingRate -= 100;
+            if (item.type === '#54df63' && player.greenItems < 10){
+    			player.firingRate -= 20;
+    			player.greenItems += 1;
+			}
 			if (item.type === '#a23843') {
         		laserType = 'round';
         		player.roundLaserCount = 0;  // 아이템을 먹을 때마다 레이저 발사 횟수 초기화
