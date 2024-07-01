@@ -71,22 +71,22 @@ function handlePlayerMovement() {
 function fireLaser() {
     for (let i = 0; i < player.lasers; i++) {
         let offset = i - Math.floor(player.lasers / 2);
-
+        
         if (laserType === 'round' && player.roundLaserCount < 50) {
             const dxValue = (Math.random() * 2 - 1) * 5;  // -5에서 5 사이의 임의의 값
-            bullets.push({
-                x: player.x + player.width / 2 + offset * 15,
-                y: player.y,
-                dx: dxValue,
-                dy: Math.sqrt(25 - dxValue * dxValue) * -1,  // 이로 인해 총 속도의 제곱은 25가 됩니다.
-                speed: 5,
-                width: 10,
-                height: 10,
-                type: 'round',
-                lastX: player.x,
-                stagnantTime: 0
-            });
-            player.roundLaserCount++;
+    		bullets.push({
+    		    x: player.x + player.width / 2 + offset * 15, 
+    		    y: player.y, 
+    		    dx: dxValue,
+    		    dy: Math.sqrt(25 - dxValue * dxValue) * -1,  // 이로 인해 총 속도의 제곱은 25가 됩니다.
+    		    speed: 5, 
+        		width: 10, 
+        		height: 10, 
+        		type: 'round',
+				lastX: player.x,
+				stagnantTime: 0
+    		});
+    		player.roundLaserCount++;
         } else if (laserType === 'round' && player.roundLaserCount >= 50) { // 레이저가 50번 발사된 후에는 기본 레이저로 변경
             laserType = 'thin';
             player.roundLaserCount = 0;
@@ -94,7 +94,7 @@ function fireLaser() {
             bullets.push({ x: player.x + player.width / 2 + offset * 15, y: player.y, speed: -5, width: 5, height: 10, type: 'thin' });
         }
     }
-
+    
     player.nextFire = Date.now() + player.firingRate;
 }
 
@@ -161,57 +161,66 @@ function gameLoop() {
 
     // Bullets
     bullets.forEach((bullet, index) => {
-        if (bullet.type === 'round') {
-            bullet.x += bullet.dx;
-            bullet.y += bullet.dy;
+		if (bullet.type === 'round') {
+        	bullet.x += bullet.dx;
+        	bullet.y += bullet.dy;
 
-            if (bullet.x === bullet.lastX) {
-                bullet.stagnantTime += 1;
-            } else {
-                bullet.stagnantTime = 0;
-            }
-            bullet.lastX = bullet.x;
+        // y축의 변화가 없는지 확인
+        	if (bullet.x === bullet.lastX) {
+        	    bullet.stagnantTime += 1;
+        	} else {
+        	    bullet.stagnantTime = 0;
+        	}
+        	bullet.lastX = bullet.x;
 
-            if (bullet.stagnantTime >= 60) {
-                bullet.dx = 5 * (Math.random() > 0.5 ? 1 : -1);
-                bullet.dy = -5;
-                bullet.stagnantTime = 0;
-            }
+        // stagnantTime이 일정 값 이상이면 대각선 방향으로 튀어올라오게 변경
+        	if (bullet.stagnantTime >= 60) {  // 예: 60 프레임 동안 변화 없을 시
+            	bullet.dx = 5 * (Math.random() > 0.5 ? 1 : -1);
+            	bullet.dy = -5;
+            	bullet.stagnantTime = 0;
+        	}
+			
+    		if (bullet.type === 'round') {
+        		bullet.x += bullet.dx;
+        		bullet.y += bullet.dy;
 
-            if (bullet.y - bullet.height / 2 <= 0) {
-                bullet.y = bullet.height / 2;
-                bullet.dy *= -1;
-            }
-            if (bullet.y + bullet.height / 2 >= canvas.height) {
-                bullet.y = canvas.height - bullet.height / 2;
-                bullet.dy *= -1;
-            }
-
-            if (bullet.x - bullet.width / 2 <= 0) {
-                bullet.x = bullet.width / 2;
-                bullet.dx *= -1;
-            }
-            if (bullet.x + bullet.width / 2 >= canvas.width) {
-                bullet.x = canvas.width - bullet.width / 2;
-                bullet.dx *= -1;
-            }
-        }
-
-        if (bullet.y < 0 || bullet.y > canvas.height) bullets.splice(index, 1);
-
+        // 상단 및 하단 벽에 부딪히면 반사
+        		if (bullet.y - bullet.height/2 <= 0) {
+        		    bullet.y = bullet.height/2;
+        		    bullet.dy *= -1;
+        		}
+        		if (bullet.y + bullet.height/2 >= canvas.height) {
+        		    bullet.y = canvas.height - bullet.height/2;
+        		    bullet.dy *= -1;
+        		}
+        
+        // 좌우 벽에 부딪히면 반사
+        		if (bullet.x - bullet.width/2 <= 0) {
+        	    	bullet.x = bullet.width/2;
+        	    	bullet.dx *= -1;
+        		}
+        		if (bullet.x + bullet.width/2 >= canvas.width) {
+        		    bullet.x = canvas.width - bullet.width/2;
+        	    	bullet.dx *= -1;
+        		}
+			}
+		}
+		
+		if (bullet.y < 0 || bullet.y > canvas.height) bullets.splice(index, 1); // 레이저가 화면 밖으로 나가면 삭제
+			
         bullet.y += bullet.speed;
-        if (bullet.type === 'round') {
-            ctx.fillStyle = '#27f0cc';
-            ctx.beginPath();
-            ctx.arc(bullet.x, bullet.y, bullet.width / 2, 0, Math.PI * 2);
-            ctx.fill();
-        } else {
-            ctx.fillStyle = '#27f0cc';
-            ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-        }
+    	if (bullet.type === 'round') {
+    	    ctx.fillStyle = '#27f0cc';
+    	    ctx.beginPath();
+    	    ctx.arc(bullet.x, bullet.y, bullet.width / 2, 0, Math.PI * 2);
+    	    ctx.fill();
+    	} else {
+    	    ctx.fillStyle = '#27f0cc';
+    	    ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+    	}
 
-        if (bullet.y < 0) bullets.splice(index, 1);
-    });
+    	if (bullet.y < 0) bullets.splice(index, 1);
+	});
 
     // Enemies
     if (Date.now() > gameStartTime + initialSpawnDelay) {
